@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="Eason"><title>记一次应急 · Eason 的博客</title><meta name="description" content="第一次去做应急响应，感谢倾旋大佬带我。
+常见的应急情况1.网站入侵：被挂黑页，发现webshell
+2.系统入侵：勒索软件，病毒蠕虫，远控木马
+3.网络攻击：DDOS
+基本情况客户在一周前发现服务器A在每天晚上10：45-早上6：00流量极大
+在网关B发现访问区块链网站（https://****co"><meta name="keywords" content="Linux"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="/images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"></head><body><div class="sidebar animated fadeInDown"><div class="logo-title"><div class="title"><img src="/images/logo@2x.png" style="width:127px;"><h3 title=""><a href="/">Eason 的博客</a></h3></div></div><ul class="social-links"><li><a href="http://github.com/ea5on"><i class="fa fa-github"></i></a></li></ul><div class="footer"><a target="_blank" href="/"><span>Theme by </span></a><a href="https://www.caicai.me"> CaiCai </a><span>&</span><a href="https://github.com/Ben02/hexo-theme-Anatole"> Ben</a><div class="by_farbox"><a href="https://hexo.io/zh-cn/" target="_blank">Proudly published with Hexo&#65281;</a></div></div></div><div class="main"><div class="page-top animated fadeInDown"><div class="nav"><li><a href="/">首页</a></li><li><a href="/about">关于</a></li><li><a href="/archives">归档</a></li><li><a href="/links">友链</a></li></div><div class="information"><div class="back_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li></div><div class="avatar"><img src="/images/favicon.png"></div></div></div><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a>记一次应急</a></h3></div><div class="post-content"><p>第一次去做应急响应，感谢<a href="https://payloads.online/" title="倾旋的博客 | 岁月静好，现世安稳。" target="_blank" rel="noopener">倾旋</a>大佬带我。</p>
+<h2 id="常见的应急情况"><a href="#常见的应急情况" class="headerlink" title="常见的应急情况"></a>常见的应急情况</h2><p>1.网站入侵：被挂黑页，发现webshell</p>
+<p>2.系统入侵：勒索软件，病毒蠕虫，远控木马</p>
+<p>3.网络攻击：DDOS</p>
+<h2 id="基本情况"><a href="#基本情况" class="headerlink" title="基本情况"></a>基本情况</h2><p>客户在一周前发现服务器A在每天晚上10：45-早上6：00流量极大</p>
+<p>在网关B发现访问区块链网站（https://****coin.**）的记录</p>
+<h2 id="基本判断"><a href="#基本判断" class="headerlink" title="基本判断"></a>基本判断</h2><p>A主机可能是被远控（时间）</p>
+<p>B主机可能是被植入挖矿脚本</p>
+<p><br></p>
+<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>首先排查A主机</p>
+<p>Linux系统，登陆后<code>top</code>查看运行情况<br><img src="https://i.imgur.com/jpRsvgh.png" alt=""></p>
+<blockquote>
+<p>N – 以 PID 的大小的顺序排列表示进程列表</p>
+<p>P – 以 CPU 占用率大小的顺序排列进程列表</p>
+<p>M – 以内存占用率大小的顺序排列进程列表</p>
+</blockquote>
+<p>无异常</p>
+<p>查看登陆记录</p>
+<pre><code>lastlog
+</code></pre><p><br></p>
+<pre><code>last
+</code></pre><p><br></p>
+<pre><code>lastb
+</code></pre><p><img src="https://i.imgur.com/w8jdwNW.png" alt=""><br>无异常</p>
+<p>这时候拿到日志<br><img src="https://i.imgur.com/k2uICnJ.png" alt=""></p>
+<p>可以看到受到不同来源的大流量</p>
+<p>11211端口，Memcached分布式系统DRDoS</p>
+<p>来源IP都是ddos主机</p>
+<p><img src="https://i.imgur.com/caWTMXc.png" alt=""><br><img src="https://i.imgur.com/I2dxjd5.png" alt=""><br><img src="https://i.imgur.com/LirvQDn.png" alt=""></p>
+<p><a href="https://blog.csdn.net/microzone/article/details/79262549" title="基于Memcached分布式系统DRDoS拒绝服务攻击技术研究" target="_blank" rel="noopener">基于Memcached分布式系统DRDoS拒绝服务攻击技术研究</a></p>
+<p>由于A主机外网开发11211端口，攻击者通过向发送伪造受害者IP地址的特定指令UDP数据包（stats、set/get指令），使memcached服务器向受害者IP地址反射返回比原始数据包大数倍的数据（理论最高可达5万倍，通过持续跟踪观察攻击流量平均放大倍数在100倍左右），从而进行反射攻击。</p>
+<p>修复建议</p>
+<blockquote>
+<p>1、如不需要使用memcached服务，可将该端口关闭。</p>
+<p>2、在memcached服务器或者其上联的网络设备上配置防火墙策略，仅允许授权的业务IP地址访问memcached服务器，拦截非法的非法访问。</p>
+<p>3、更改memcached服务的监听端口为11211之外的其他大端口，避免针对默认端口的恶意利用。</p>
+<p>4、升级到最新的memcached软件版本，配置启用SASL认证等权限控制策略（在编译安装memcached程序时添加-enable-sasl选项，并且在启动memcached服务程序时添加-S参数，启用SASL认证机制以提升memcached的安全性）。</p>
+</blockquote>
+<p><br><br><br>B主机为网关设备，由于客户原因无法直接查看，在互联网上搜索该区块链网站（https://****coin.**）无法获得攻击记录并处于白名单，可以认为该网站是安全的，询问客户得知相关记录并无异常（挖矿脚本占用大量系统资源，且有大量访问矿池等记录），暂时记录为安全。</p>
+</div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2018-11-25</span><i class="fa fa-tag"></i><a class="tag" href="/categories/应急响应/" title="应急响应">应急响应 </a></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" href="http://twitter.com/home?status=,http://yoursite.com/2018/11/25/记一次应急/,Eason 的博客,记一次应急,;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="next pagbuttons"><a class="btn" role="navigation" href="/2018/11/24/hello-world/" title="Hello World">下一篇</a></li></ul></div><a id="comments"></a><div id="vcomments" style="margin:0 30px;"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7/dist/Valine.min.js?v=undefined"></script><script>var valine = new Valine({
+  el:'#vcomments',
+  notify:false || false, 
+  verify:false|| false, 
+  app_id:'Y1t5hlpXQHfpWpR7qtyaT351-gzGzoHsz',
+  app_key:'yvrtethd8B3Lk7q2O9XjIYbS',
+  placeholder:'讨论一下?',
+  path: window.location.pathname,
+  avatar:'mm'
+})</script></div></div></div></div><script src="/js/jquery.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script></body></html>
