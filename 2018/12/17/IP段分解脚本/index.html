@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="Eason"><title>IP段分解脚本 · Eason 的博客</title><meta name="description" content="引言做项目的时候经常会碰到一堆IP列表,像这样
+
+乍一看还很正常,但是这个
+111.75.193.31-111.75.193.31
+是个什么东西???
+强迫症果断不能忍啊,你为什么要写成段的形式?而且这个列表肯定还有重复的
+让我们用Pyhon来分解去重一下
+百度一下网上已经有大佬写出来的,
+pyth"><meta name="keywords" content="Linux"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="/images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"></head><body><div class="sidebar animated fadeInDown"><div class="logo-title"><div class="title"><img src="/images/logo@2x.png" style="width:127px;"><h3 title=""><a href="/">Eason 的博客</a></h3></div></div><ul class="social-links"><li><a href="http://github.com/ea5on"><i class="fa fa-github"></i></a></li></ul><div class="footer"><a target="_blank" href="/"><span>Theme by </span></a><a href="https://www.caicai.me"> CaiCai </a><span>&</span><a href="https://github.com/Ben02/hexo-theme-Anatole"> Ben</a><div class="by_farbox"><a href="https://hexo.io/zh-cn/" target="_blank">Proudly published with Hexo&#65281;</a></div></div></div><div class="main"><div class="page-top animated fadeInDown"><div class="nav"><li><a href="/">首页</a></li><li><a href="/about">关于</a></li><li><a href="/archives">归档</a></li><li><a href="/links">友链</a></li></div><div class="information"><div class="back_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li></div><div class="avatar"><img src="/images/favicon.png"></div></div></div><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a>IP段分解脚本</a></h3></div><div class="post-content"><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>做项目的时候经常会碰到一堆IP列表,像这样</p>
+<p><img src="https://i.imgur.com/jhiyq9x.png" alt=""></p>
+<p>乍一看还很正常,但是这个</p>
+<p><strong>111.75.193.31-111.75.193.31</strong></p>
+<p>是个什么东西???</p>
+<p>强迫症果断不能忍啊,你为什么要写成段的形式?而且这个列表肯定还有重复的</p>
+<p>让我们用Pyhon来分解去重一下</p>
+<h2 id="百度一下"><a href="#百度一下" class="headerlink" title="百度一下"></a>百度一下</h2><p>网上已经有大佬写出来的,</p>
+<p><a href="http://www.cnblogs.com/amaoxiaozhu/archive/2012/09/04/2670009.html" target="_blank" rel="noopener">python 对ip段处理 - 阿毛小猪 - 博客园</a></p>
+<p>不过我看得头大,有没有现成的库可以用呢?</p>
+<h2 id="IPy"><a href="#IPy" class="headerlink" title="IPy"></a>IPy</h2><p>百度了一下基本上处理IP都是使用IPy的库</p>
+<p>让我们来看看</p>
+<blockquote>
+<p>IP段转换为CIDR格式:</p>
+</blockquote>
+<pre><code>print (IP(&apos;192.168.1.0-192.168.1.255&apos;,make_net=True))
+</code></pre><blockquote>
+<p>分解CIDR格式:</p>
+</blockquote>
+<pre><code>ip=IP(&apos;192.168.0.0/28&apos;)
+for x in ip:
+    print x
+</code></pre><p><img src="https://i.imgur.com/8Pr4AVo.png" alt=""></p>
+<p>看起来不错</p>
+<p>让我来试试</p>
+<p><img src="https://i.imgur.com/D6Oqose.png" alt=""></p>
+<p>???</p>
+<p>好像对CIDR格式有要求,不规则的段/CIDR都不能正确转换</p>
+<p>群里问了一下大佬,发现netaddr这个库,百度一下好像资料比IPy少</p>
+<p>##netaddr##<br>使用非常简单   <code>netaddr.iprange_to_cidrs(startip, endip)</code>即可</p>
+<pre><code>startip = &apos;1.1.1.1&apos;
+endip = &apos;255.255.255.255&apos;
+cidrs = netaddr.iprange_to_cidrs(startip, endip)
+for i in enumerate(cidrs):
+    print i
+</code></pre><p>这样就可以输出全网IP</p>
+<p>对于CIDR格式,有<code>IPNetwork()</code>方法</p>
+<pre><code>for j in IPNetwork(&apos;192.168.1.0/24&apos;) :
+                print j
+</code></pre><p>这样就输出了192.168.1.0整个C段的IP</p>
+<h2 id="最终代码"><a href="#最终代码" class="headerlink" title="最终代码"></a>最终代码</h2><pre><code>import netaddr
+from netaddr import IPNetwork
+import sys
+
+def showIP(**args):
+    if len(args)==2:
+        cidrs = netaddr.iprange_to_cidrs(args[&apos;startip&apos;], args[&apos;endip&apos;])
+        for i in cidrs:
+            for j in IPNetwork(i) :
+                print j
+    else:
+        for j in IPNetwork(args[&apos;only&apos;]) :
+            print j
+
+
+if __name__ == &apos;__main__&apos;:
+    with open(sys.argv[1],&apos;r&apos;) as f:
+        for i in f.readlines():
+            i=i.strip()
+            if &apos;-&apos; in i:
+                showIP(startip=i.split(&apos;-&apos;)[0],endip=i.split(&apos;-&apos;)[1])
+            elif &apos;/&apos; in i:
+                showIP(only=i.strip())
+            else:
+                print i
+</code></pre><p>按列读TXT文件,是IP段格式或CIDR格式就分解,否则输出</p>
+<p><img src="https://i.imgur.com/bWUp4yP.png" alt=""></p>
+<p>也可以直接转换成CIDR格式,简单改一下即可</p>
+<p><img src="https://i.imgur.com/NEJ7RbO.png" alt=""></p>
+</div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2018-12-17</span><i class="fa fa-tag"></i><a class="tag" href="/categories/渗透测试/" title="渗透测试">渗透测试 </a></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" href="http://twitter.com/home?status=,http://yoursite.com/2018/12/17/IP段分解脚本/,Eason 的博客,IP段分解脚本,;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="next pagbuttons"><a class="btn" role="navigation" href="/2018/12/03/记一次注入bypass/" title="记一次注入bypass">下一篇</a></li></ul></div><a id="comments"></a><div id="vcomments" style="margin:0 30px;"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7/dist/Valine.min.js?v=undefined"></script><script>var valine = new Valine({
+  el:'#vcomments',
+  notify:false || false, 
+  verify:false|| false, 
+  app_id:'Y1t5hlpXQHfpWpR7qtyaT351-gzGzoHsz',
+  app_key:'yvrtethd8B3Lk7q2O9XjIYbS',
+  placeholder:'讨论一下?',
+  path: window.location.pathname,
+  avatar:'mm'
+})</script></div></div></div></div><script src="/js/jquery.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script></body></html>
