@@ -8,40 +8,40 @@ level 1算是教程吧，直接常规payload即可
 
 由"><meta name="keywords" content="Linux"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="/images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"></head><body><div class="sidebar animated fadeInDown"><div class="logo-title"><div class="title"><img src="/images/logo@2x.png" style="width:127px;"><h3 title=""><a href="/">Eason 的博客</a></h3></div></div><ul class="social-links"><li><a href="http://github.com/ea5on"><i class="fa fa-github"></i></a></li></ul><div class="footer"><a target="_blank" href="/"><span>Theme by </span></a><a href="https://www.caicai.me"> CaiCai </a><span>&</span><a href="https://github.com/Ben02/hexo-theme-Anatole"> Ben</a><div class="by_farbox"><a href="https://hexo.io/zh-cn/" target="_blank">Proudly published with Hexo&#65281;</a></div></div></div><div class="main"><div class="page-top animated fadeInDown"><div class="nav"><li><a href="/">首页</a></li><li><a href="/about">关于</a></li><li><a href="/archives">归档</a></li><li><a href="/links">友链</a></li></div><div class="information"><div class="back_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li></div><div class="avatar"><img src="/images/favicon.png"></div></div></div><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a>The unescape room write up</a></h3></div><div class="post-content"><p>twitter上看到一个xss bypass的项目,有点像ctf，但是比较简单</p>
 <p><a href="https://unescape-room.jobertabma.nl/" target="_blank" rel="noopener">项目地址</a></p>
-<p><img src="..//pic/writeup/1.jpg" alt=""><br>第一个是按顺序做题，难度依次上升</p>
+<p><img src="https://ea5on.github.io/pic/writeup/1.jpg" alt=""><br>第一个是按顺序做题，难度依次上升</p>
 <p>第二个是限制时间解题</p>
 <p>目标是构造js代码运行相应函数（相应参数），每一关难度不一</p>
 <p><del>碰到不会的我就直接new了新的题目</del></p>
 <h2 id="level-1"><a href="#level-1" class="headerlink" title="level 1"></a>level 1</h2><p>算是教程吧，直接常规payload即可</p>
-<p><img src="..//pic/writeup/2.jpg" alt=""></p>
+<p><img src="https://ea5on.github.io/pic/writeup/2.jpg" alt=""></p>
 <p>由于题目的函数和参数都是随机的，所以看图就好，payload没太大意义</p>
 <p>注意7是字符类型要加双（单）引号</p>
 <h2 id="level-2"><a href="#level-2" class="headerlink" title="level 2"></a>level 2</h2><p>输出还是在body体内，看一下过滤了l字符</p>
-<p><img src="/2019/03/26/The unescape room write up/pic/writeup/3.jpg" alt=""></p>
+<p><img src="https://ea5on.github.io/pic/writeup/3.jpg" alt=""></p>
 <p>unicode编码即可绕过</p>
-<p><img src="/2019/03/26/The unescape room write up/pic/writeup/4.jpg" alt=""></p>
+<p><img src="https://ea5on.github.io/pic/writeup/4.jpg" alt=""></p>
 <h2 id="level-3"><a href="#level-3" class="headerlink" title="level 3"></a>level 3</h2><p>输出还是在body体内，看一下过滤了数字8，目的参数是820</p>
-<p><img src="/2019/03/26/The unescape room write up/pic/writeup/5.jpg" alt=""></p>
+<p><img src="https://ea5on.github.io/pic/writeup/5.jpg" alt=""></p>
 <p>这里我是将8变成数字拼接字符串</p>
-<p><img src="/2019/03/26/The unescape room write up/pic/writeup/6.jpg" alt=""></p>
-<h2 id="level-4"><a href="#level-4" class="headerlink" title="level 4"></a>level 4</h2><p>没仔细看，以为还是过滤了r，unicode字符后发现2也被过滤了<br><img src="/2019/03/26/The unescape room write up/pic/writeup/7.jpg" alt=""></p>
+<p><img src="https://ea5on.github.io/pic/writeup/6.jpg" alt=""></p>
+<h2 id="level-4"><a href="#level-4" class="headerlink" title="level 4"></a>level 4</h2><p>没仔细看，以为还是过滤了r，unicode字符后发现2也被过滤了<br><img src="https://ea5on.github.io/pic/writeup/7.jpg" alt=""></p>
 <p>由于toLowerCase 和 各种编码都带2，这里用xss平台常见的paylaod eval(atob)</p>
 <p>base64后都不带r和2</p>
-<p><img src="/2019/03/26/The unescape room write up/pic/writeup/8.jpg" alt=""></p>
-<h2 id="level-5"><a href="#level-5" class="headerlink" title="level 5"></a>level 5</h2><p><img src="/2019/03/26/The unescape room write up/pic/writeup/9.jpg" alt=""></p>
+<p><img src="https://ea5on.github.io/pic/writeup/8.jpg" alt=""></p>
+<h2 id="level-5"><a href="#level-5" class="headerlink" title="level 5"></a>level 5</h2><p><img src="https://ea5on.github.io/pic/writeup/9.jpg" alt=""></p>
 <p>闭合标签常规套路发现k被过滤</p>
 <p>和之前的差不多把K变小写再拼接即可</p>
-<p><img src="/2019/03/26/The unescape room write up/pic/writeup/10.jpg" alt=""></p>
-<h2 id="level-6"><a href="#level-6" class="headerlink" title="level 6"></a>level 6</h2><p><img src="/2019/03/26/The unescape room write up/pic/writeup/11-12.jpg" alt=""></p>
+<p><img src="https://ea5on.github.io/pic/writeup/10.jpg" alt=""></p>
+<h2 id="level-6"><a href="#level-6" class="headerlink" title="level 6"></a>level 6</h2><p><img src="https://ea5on.github.io/pic/writeup/11-12.jpg" alt=""></p>
 <p>感觉eval（atob）没有被作者考虑到，后面好向基本都是靠他bypass</p>
 <h2 id="level-7"><a href="#level-7" class="headerlink" title="level 7"></a>level 7</h2><p>输出在script内，闭合</p>
-<p><img src="/2019/03/26/The unescape room write up/pic/writeup/13.jpg" alt=""></p>
+<p><img src="https://ea5on.github.io/pic/writeup/13.jpg" alt=""></p>
 <p>j和0被过滤，拼接</p>
-<p><img src="/2019/03/26/The unescape room write up/pic/writeup/14.jpg" alt=""></p>
-<h2 id="level-8"><a href="#level-8" class="headerlink" title="level 8"></a>level 8</h2><p><img src="/2019/03/26/The unescape room write up/pic/writeup/16.jpg" alt=""></p>
-<h2 id="level-9"><a href="#level-9" class="headerlink" title="level 9"></a>level 9</h2><p><img src="/2019/03/26/The unescape room write up/pic/writeup/18.jpg" alt=""></p>
+<p><img src="https://ea5on.github.io/pic/writeup/14.jpg" alt=""></p>
+<h2 id="level-8"><a href="#level-8" class="headerlink" title="level 8"></a>level 8</h2><p><img src="https://ea5on.github.io/pic/writeup/16.jpg" alt=""></p>
+<h2 id="level-9"><a href="#level-9" class="headerlink" title="level 9"></a>level 9</h2><p><img src="https://ea5on.github.io/pic/writeup/18.jpg" alt=""></p>
 <p>注意前后闭合，然后输入框里面是倒序的，eval很强</p>
-<h2 id="level-10"><a href="#level-10" class="headerlink" title="level 10"></a>level 10</h2><p><img src="/2019/03/26/The unescape room write up/pic/writeup/20.jpg" alt=""></p>
+<h2 id="level-10"><a href="#level-10" class="headerlink" title="level 10"></a>level 10</h2><p><img src="https://ea5on.github.io/pic/writeup/20.jpg" alt=""></p>
 <h2 id="emmm"><a href="#emmm" class="headerlink" title="emmm"></a>emmm</h2><p>其实跳过了一些有些奇怪的题目，这里面还是有些题目没做出来，也是强行把10个level解决强行写了这篇writeup，轻喷。</p>
 </div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2019-03-26</span><i class="fa fa-tag"></i><a class="tag" href="/categories/渗透测试/" title="渗透测试">渗透测试 </a></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" href="http://twitter.com/home?status=,http://yoursite.com/2019/03/26/The unescape room write up/,Eason 的博客,The unescape room write up,;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="next pagbuttons"><a class="btn" role="navigation" href="/2018/12/17/IP段分解脚本/" title="IP段分解脚本">下一篇</a></li></ul></div><a id="comments"></a><div id="vcomments" style="margin:0 30px;"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7/dist/Valine.min.js?v=undefined"></script><script>var valine = new Valine({
   el:'#vcomments',
