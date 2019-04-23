@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="Eason"><title>【Ubuntu16】安装Chrome和ChromeDriver · Eason 的博客</title><meta name="description" content="环境：Ubuntu16  64位系统
+1.安装chrome首先安装相关库
+sudo apt-get install libxss1 libappindicator1 libindicator7
+下载chrome
+wget https://dl.google.com/linux/direct/goog"><meta name="keywords" content="Linux"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="/images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/blog_basic.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"></head><body><div class="sidebar animated fadeInDown"><div class="logo-title"><div class="title"><img src="/images/logo@2x.png" style="width:127px;"><h3 title=""><a href="/">Eason 的博客</a></h3></div></div><ul class="social-links"><li><a href="http://github.com/ea5on"><i class="fa fa-github"></i></a></li></ul><div class="footer"><a target="_blank" href="/"><span>Theme by </span></a><a href="https://www.caicai.me"> CaiCai </a><span>&</span><a href="https://github.com/Ben02/hexo-theme-Anatole"> Ben</a><div class="by_farbox"><a href="https://hexo.io/zh-cn/" target="_blank">Proudly published with Hexo&#65281;</a></div></div></div><div class="main"><div class="page-top animated fadeInDown"><div class="nav"><li><a href="/">首页</a></li><li><a href="/about">关于</a></li><li><a href="/archives">归档</a></li><li><a href="/links">友链</a></li></div><div class="information"><div class="back_btn"><li><a class="fa fa-chevron-left" onclick="window.history.go(-1)"> </a></li></div><div class="avatar"><img src="/images/favicon.png"></div></div></div><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post animated fadeInDown"><div class="post-title"><h3><a>【Ubuntu16】安装Chrome和ChromeDriver</a></h3></div><div class="post-content"><p>环境：Ubuntu16  64位系统</p>
+<h2 id="1-安装chrome"><a href="#1-安装chrome" class="headerlink" title="1.安装chrome"></a>1.安装chrome</h2><p>首先安装相关库</p>
+<pre><code>sudo apt-get install libxss1 libappindicator1 libindicator7
+</code></pre><p>下载chrome</p>
+<pre><code>wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+</code></pre><p>安装chrome</p>
+<pre><code>sudo dpkg -i google-chrome*.deb
+</code></pre><p>如果报错如下</p>
+<p><img src="https://ea5on.github.io/pic/chrome/1.jpg" alt=""></p>
+<p>则运行</p>
+<pre><code>sudo apt-get install -f
+</code></pre><p>稍等安装完成后再次</p>
+<pre><code>sudo dpkg -i google-chrome*.deb
+</code></pre><p>安装确认</p>
+<pre><code>google-chrome-stable --version
+</code></pre><p>返回chrome版本即为安装成功，为chrome 73</p>
+<p><img src="https://ea5on.github.io/pic/chrome/2.jpg" alt=""></p>
+<h2 id="2-安装chromedriver"><a href="#2-安装chromedriver" class="headerlink" title="2.安装chromedriver"></a>2.安装chromedriver</h2><p>下载的chromedriver需要和当前的chrome版本相对应</p>
+<p>打开<a href="http://chromedriver.storage.googleapis.com/index.html" target="_blank" rel="noopener">http://chromedriver.storage.googleapis.com/index.html</a><br>找到最新版本的note文件即可查看对应关系</p>
+<p>笔者当时访问的是<a href="http://chromedriver.storage.googleapis.com/2.46/notes.txt" target="_blank" rel="noopener">http://chromedriver.storage.googleapis.com/2.46/notes.txt</a></p>
+<p><img src="https://ea5on.github.io/pic/chrome/3.jpg" alt=""></p>
+<p>可以看到chrome73对应的是chromedriver v2.46</p>
+<p>下载之</p>
+<pre><code>wget http://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip
+</code></pre><p>解压安装</p>
+<pre><code>unzip chromedriver_linux64.zip
+chmod +x chromedriver
+sudo mv -f chromedriver /usr/local/share/chromedriver
+sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver
+</code></pre><h2 id="3-测试代码"><a href="#3-测试代码" class="headerlink" title="3.测试代码"></a>3.测试代码</h2><pre><code>#coding=utf8
+from selenium import webdriver 
+from selenium.webdriver.chrome.options import Options 
+chrome_options = Options() 
+chrome_options.add_argument(&apos;--headless&apos;) 
+chrome_options.add_argument(&apos;--disable-gpu&apos;) 
+chrome_options.add_argument(&apos;--no-sandbox&apos;) 
+chrome_options.add_argument(&apos;--disable-dev-shm-usage&apos;)
+driver = webdriver.Chrome(chrome_options=chrome_options) 
+#driver = webdriver.Chrome() 
+driver.get(&quot;https://fanyi.baidu.com&quot;) 
+print(driver.page_source) 
+#driver.quit()
+</code></pre><p>运行结果如下（返回页面源码）</p>
+<p><img src="https://ea5on.github.io/pic/chrome/4.jpg" alt=""></p>
+</div><div class="post-footer"><div class="meta"><div class="info"><i class="fa fa-sun-o"></i><span class="date">2019-04-22</span><i class="fa fa-tag"></i><a class="tag" href="/categories/记录/" title="记录">记录 </a></div></div></div></div><div class="share"><div class="evernote"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></div><div class="weibo"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></div><div class="twitter"><a class="fa fa-twitter" href="http://twitter.com/home?status=,http://yoursite.com/2019/04/22/【Ubuntu16】安装Chrome和ChromeDriver/,Eason 的博客,【Ubuntu16】安装Chrome和ChromeDriver,;"></a></div></div><div class="pagination"><ul class="clearfix"><li class="next pagbuttons"><a class="btn" role="navigation" href="/2019/03/26/The unescape room write up/" title="The unescape room write up">下一篇</a></li></ul></div><a id="comments"></a><div id="vcomments" style="margin:0 30px;"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//cdn.jsdelivr.net/gh/xcss/valine@v1.1.7/dist/Valine.min.js?v=undefined"></script><script>var valine = new Valine({
+  el:'#vcomments',
+  notify:false || false, 
+  verify:false|| false, 
+  app_id:'Y1t5hlpXQHfpWpR7qtyaT351-gzGzoHsz',
+  app_key:'yvrtethd8B3Lk7q2O9XjIYbS',
+  placeholder:'讨论一下?',
+  path: window.location.pathname,
+  avatar:'mm'
+})</script></div></div></div></div><script src="/js/jquery.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script></body></html>
